@@ -1,20 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 
 interface Props {
   onClose: () => void;
 }
 
-const MODELS = [
-  { id: 'claude-opus-4-20250514', name: 'Claude Opus 4 (最强，最贵)' },
-  { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4 (平衡)' },
-  { id: 'claude-haiku-4-20250514', name: 'Claude Haiku 4 (最快，最便宜)' },
+const RECOMMENDED_MODELS = [
+  'claude-opus-4-20250514',
+  'claude-sonnet-4-20250514',
+  'claude-haiku-4-20250514',
 ];
 
 export default function Settings({ onClose }: Props) {
   const [apiKey, setApiKey] = useState('');
   const [model, setModel] = useState('claude-sonnet-4-20250514');
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    invoke<{ api_key_set: boolean; model: string }>('get_settings').then((settings) => {
+      setModel(settings.model);
+    }).catch(console.error);
+  }, []);
 
   async function handleSave() {
     try {
@@ -31,7 +37,7 @@ export default function Settings({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg p-6 w-96">
+      <div className="bg-gray-800 rounded-lg p-6 w-[480px]">
         <h2 className="text-xl font-medium mb-4">设置</h2>
         <div className="mb-4">
           <label className="block text-gray-400 text-sm mb-2">API Key</label>
@@ -45,17 +51,28 @@ export default function Settings({ onClose }: Props) {
         </div>
         <div className="mb-4">
           <label className="block text-gray-400 text-sm mb-2">模型</label>
-          <select
+          <input
+            type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
+            placeholder="输入任意模型名称，如 claude-sonnet-4-20250514"
             className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {MODELS.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            {RECOMMENDED_MODELS.map((m) => (
+              <button
+                key={m}
+                onClick={() => setModel(m)}
+                className={`text-xs px-2 py-1 rounded ${
+                  model === m
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                }`}
+              >
+                {m}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
         {saved && <p className="text-green-500 text-sm mb-4">已保存！</p>}
         <div className="flex gap-4">

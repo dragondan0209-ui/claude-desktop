@@ -255,7 +255,9 @@ pub fn get_settings() -> Result<Settings, String> {
 
 #[command]
 pub fn save_settings(api_key: String, model: String) -> Result<(), String> {
-    set_api_key(&api_key)?;
+    if !api_key.is_empty() {
+        set_api_key(&api_key)?;
+    }
     set_model(&model)?;
     Ok(())
 }
