@@ -10,7 +10,7 @@ function App() {
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [commands, setCommands] = useState<QuickCommand[]>([]);
-  const [settings, setSettings] = useState<SettingsType>({ api_key_set: false });
+  const [_settings, setSettings] = useState<SettingsType>({ api_key_set: false });
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
@@ -121,7 +121,7 @@ function App() {
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
         onDeleteConversation={handleDeleteConversation}
-        onSelectCommand={(prompt) => {/* Fill input */}}
+        onSelectCommand={(_prompt) => {/* Fill input */}}
         onAddCommand={handleAddCommand}
         onOpenSettings={() => setShowSettings(true)}
       />

@@ -1,0 +1,12 @@
+D:\workspace\claude-desktop\src-tauri\target\release\deps\rand_core-32a754e20bf0beb1.d: C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\lib.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\block.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\error.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\impls.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\le.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\os.rs
+
+D:\workspace\claude-desktop\src-tauri\target\release\deps\librand_core-32a754e20bf0beb1.rlib: C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\lib.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\block.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\error.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\impls.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\le.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\os.rs
+
+D:\workspace\claude-desktop\src-tauri\target\release\deps\librand_core-32a754e20bf0beb1.rmeta: C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\lib.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\block.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\error.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\impls.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\le.rs C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\os.rs
+
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\lib.rs:
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\block.rs:
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\error.rs:
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\impls.rs:
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\le.rs:
+C:\Users\dan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rand_core-0.6.4\src\os.rs:
