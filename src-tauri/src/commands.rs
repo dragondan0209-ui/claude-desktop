@@ -94,7 +94,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     let api_key = get_api_key().ok_or("API key not set")?;
 
     // Save user message and get history
-    let (msg_id, now, history) = {
+    let (_msg_id, _now, history) = {
         let db = get_db().lock().map_err(|e| e.to_string())?;
         let msg_id = Uuid::new_v4().to_string();
         let now = Utc::now().to_rfc3339();

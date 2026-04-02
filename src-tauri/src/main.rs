@@ -7,7 +7,7 @@ mod db;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    GlobalShortcutManager, Manager,
+    Manager,
 };
 
 fn main() {
@@ -15,6 +15,7 @@ fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let show = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
@@ -22,7 +23,7 @@ fn main() {
 
             let _tray = TrayIconBuilder::new()
                 .menu(&menu)
-                .menu_on_left_click(false)
+                .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
                         app.exit(0);
@@ -53,14 +54,15 @@ fn main() {
 
             // Register global shortcut
             let handle = app.handle().clone();
-            app.global_shortcut_manager()
-                .on_shortcut("CmdOrCtrl+Shift+C", move |_app, _shortcut, _event| {
+            use tauri_plugin_global_shortcut::GlobalShortcutExt;
+            if let Ok(shortcut) = "CmdOrCtrl+Shift+C".parse() {
+                let _ = app.global_shortcut().on_shortcut(shortcut, move |_app, _shortcut, _event| {
                     if let Some(window) = handle.get_webview_window("main") {
                         let _ = window.show();
                         let _ = window.set_focus();
                     }
-                })
-                .ok();
+                });
+            }
 
             Ok(())
         })
