@@ -15,6 +15,9 @@ export default function Settings({ onClose }: Props) {
   const [apiKey, setApiKey] = useState('');
   const [model, setModel] = useState('claude-sonnet-4-20250514');
   const [saved, setSaved] = useState(false);
+  const [showRawEditor, setShowRawEditor] = useState(false);
+  const [rawJson, setRawJson] = useState('');
+  const [rawError, setRawError] = useState('');
 
   useEffect(() => {
     invoke<{ api_key_set: boolean; model: string }>('get_settings').then((settings) => {
@@ -35,9 +38,34 @@ export default function Settings({ onClose }: Props) {
     }
   }
 
+  async function openRawEditor() {
+    try {
+      const json = await invoke<string>('get_settings_raw');
+      setRawJson(json);
+      setRawError('');
+      setShowRawEditor(true);
+    } catch (e) {
+      console.error('Failed to get raw settings:', e);
+    }
+  }
+
+  async function saveRawJson() {
+    try {
+      await invoke('save_settings_raw', { json: rawJson });
+      setShowRawEditor(false);
+      setSaved(true);
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 1000);
+    } catch (e) {
+      setRawError(String(e));
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg p-6 w-[480px]">
+      <div className="bg-gray-800 rounded-lg p-6 w-[480px] max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-medium mb-4">设置</h2>
         <div className="mb-4">
           <label className="block text-gray-400 text-sm mb-2">API Key</label>
@@ -75,7 +103,7 @@ export default function Settings({ onClose }: Props) {
           </div>
         </div>
         {saved && <p className="text-green-500 text-sm mb-4">已保存！</p>}
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-4">
           <button
             onClick={handleSave}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium"
@@ -89,7 +117,44 @@ export default function Settings({ onClose }: Props) {
             取消
           </button>
         </div>
+        <button
+          onClick={openRawEditor}
+          className="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded-lg font-medium text-sm"
+        >
+          编辑原始配置 (JSON)
+        </button>
       </div>
+
+      {showRawEditor && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60]">
+          <div className="bg-gray-800 rounded-lg p-6 w-[560px]">
+            <h3 className="text-lg font-medium mb-4">编辑 settings.json</h3>
+            <textarea
+              value={rawJson}
+              onChange={(e) => {
+                setRawJson(e.target.value);
+                setRawError('');
+              }}
+              className="w-full h-48 bg-gray-900 text-green-400 px-4 py-3 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+            {rawError && <p className="text-red-400 text-sm mt-2">{rawError}</p>}
+            <div className="flex gap-4 mt-4">
+              <button
+                onClick={saveRawJson}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium"
+              >
+                保存
+              </button>
+              <button
+                onClick={() => setShowRawEditor(false)}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg font-medium"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

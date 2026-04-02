@@ -261,3 +261,29 @@ pub fn save_settings(api_key: String, model: String) -> Result<(), String> {
     set_model(&model)?;
     Ok(())
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RawSettings {
+    pub api_key: Option<String>,
+    pub model: String,
+}
+
+#[command]
+pub fn get_settings_raw() -> Result<String, String> {
+    let api_key = get_api_key();
+    let model = get_model().unwrap_or_else(|| "claude-sonnet-4-20250514".to_string());
+    let raw = RawSettings { api_key, model };
+    serde_json::to_string_pretty(&raw).map_err(|e| e.to_string())
+}
+
+#[command]
+pub fn save_settings_raw(json: String) -> Result<(), String> {
+    let raw: RawSettings = serde_json::from_str(&json).map_err(|e| format!("JSON 解析失败: {}", e))?;
+    if let Some(key) = raw.api_key {
+        if !key.is_empty() {
+            set_api_key(&key)?;
+        }
+    }
+    set_model(&raw.model)?;
+    Ok(())
+}
