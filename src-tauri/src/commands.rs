@@ -93,34 +93,36 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     // Get API key
     let api_key = get_api_key().ok_or("API key not set")?;
 
-    // Save user message
-    let db = get_db().lock().map_err(|e| e.to_string())?;
-    let msg_id = Uuid::new_v4().to_string();
-    let now = Utc::now().to_rfc3339();
+    // Save user message and get history
+    let (msg_id, now, history) = {
+        let db = get_db().lock().map_err(|e| e.to_string())?;
+        let msg_id = Uuid::new_v4().to_string();
+        let now = Utc::now().to_rfc3339();
 
-    db.execute(
-        "INSERT INTO messages (id, conversation_id, role, content, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
-        [&msg_id, &conversation_id, "user", &content, &now],
-    )
-    .map_err(|e| e.to_string())?;
-
-    // Update conversation timestamp
-    db.execute(
-        "UPDATE conversations SET updated_at = ?1 WHERE id = ?2",
-        [&now, &conversation_id],
-    )
-    .map_err(|e| e.to_string())?;
-
-    // Get conversation history for context
-    let mut stmt = db
-        .prepare("SELECT role, content FROM messages WHERE conversation_id = ?1 ORDER BY created_at ASC")
+        db.execute(
+            "INSERT INTO messages (id, conversation_id, role, content, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+            [&msg_id, &conversation_id, "user", &content, &now],
+        )
         .map_err(|e| e.to_string())?;
 
-    let history: Vec<(String, String)> = stmt
-        .query_map([&conversation_id], |row| Ok((row.get(0)?, row.get(1)?)))
-        .map_err(|e| e.to_string())?
-        .filter_map(|r| r.ok())
-        .collect();
+        db.execute(
+            "UPDATE conversations SET updated_at = ?1 WHERE id = ?2",
+            [&now, &conversation_id],
+        )
+        .map_err(|e| e.to_string())?;
+
+        let mut stmt = db
+            .prepare("SELECT role, content FROM messages WHERE conversation_id = ?1 ORDER BY created_at ASC")
+            .map_err(|e| e.to_string())?;
+
+        let history: Vec<(String, String)> = stmt
+            .query_map([&conversation_id], |row| Ok((row.get(0)?, row.get(1)?)))
+            .map_err(|e| e.to_string())?
+            .filter_map(|r| r.ok())
+            .collect();
+
+        (msg_id, now, history)
+    }; // db and stmt dropped here, before async code
 
     // Build messages for Claude API
     let claude_messages: Vec<serde_json::Value> = history
