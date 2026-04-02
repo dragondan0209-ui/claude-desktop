@@ -55,7 +55,7 @@ fn main() {
             // Register global shortcut
             let handle = app.handle().clone();
             use tauri_plugin_global_shortcut::GlobalShortcutExt;
-            if let Ok(shortcut) = "CmdOrCtrl+Shift+C".parse() {
+            if let Ok(shortcut) = "CmdOrCtrl+Shift+C".parse::<tauri_plugin_global_shortcut::Shortcut>() {
                 let _ = app.global_shortcut().on_shortcut(shortcut, move |_app, _shortcut, _event| {
                     if let Some(window) = handle.get_webview_window("main") {
                         let _ = window.show();
