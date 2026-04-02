@@ -1,6 +1,7 @@
 use crate::config::{get_api_key, set_api_key};
 use crate::db::{get_db, Conversation, Message, QuickCommand};
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 use tauri::command;
 use uuid::Uuid;
 use chrono::Utc;
@@ -135,7 +136,10 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
         .collect();
 
     // Call Claude API
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()
+        .map_err(|_| format!("Failed to create HTTP client"))?;
     let response = client
         .post("https://api.anthropic.com/v1/messages")
         .header("x-api-key", &api_key)
@@ -148,16 +152,34 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
         }))
         .send()
         .await
-        .map_err(|e| format!("Failed to call Claude API: {}", e))?;
+        .map_err(|_| format!("Failed to call Claude API"))?;
+
+    // Validate HTTP status
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(format!("API error {}: {}", status, body));
+    }
 
     let response_json: serde_json::Value = response
         .json()
         .await
-        .map_err(|e| format!("Failed to parse response: {}", e))?;
+        .map_err(|_| format!("Failed to parse response"))?;
 
-    let assistant_content = response_json["content"]
+    let blocks = response_json["content"]
         .as_array()
-        .and_then(|arr| arr.first())
+        .ok_or("Invalid response from Claude API")?;
+
+    // Check for error blocks in the response
+    for block in blocks {
+        if block["type"].as_str() == Some("error") {
+            let error_msg = block["text"].as_str().unwrap_or("Unknown error");
+            return Err(format!("Claude API error: {}", error_msg));
+        }
+    }
+
+    let assistant_content = blocks
+        .first()
         .and_then(|block| block["text"].as_str())
         .ok_or("Invalid response from Claude API")?
         .to_string();
