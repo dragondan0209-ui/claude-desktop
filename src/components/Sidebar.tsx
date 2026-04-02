@@ -119,6 +119,13 @@ export default function Sidebar({
           ))}
         </div>
       </div>
+
+      <div className="p-4 border-t border-gray-700">
+        <button className="w-full text-gray-400 hover:text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2">
+          <span>⚙️</span>
+          <span>设置</span>
+        </button>
+      </div>
     </div>
   );
 }
