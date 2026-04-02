@@ -57,7 +57,7 @@ function App() {
   async function handleNewConversation() {
     try {
       const conv = await invoke<Conversation>('create_conversation', { title: '新对话' });
-      setConversations([conv, ...conversations]);
+      setConversations(convs => [conv, ...convs]);
       setCurrentConversation(conv);
       setMessages([]);
     } catch (e) {
@@ -82,7 +82,7 @@ function App() {
     if (!currentConversation) return;
 
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       conversation_id: currentConversation.id,
       role: 'user',
       content,
