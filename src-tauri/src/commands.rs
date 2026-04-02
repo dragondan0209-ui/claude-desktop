@@ -1,4 +1,4 @@
-use crate::config::{get_api_key, set_api_key};
+use crate::config::{get_api_key, get_model, set_api_key, set_model};
 use crate::db::{get_db, Conversation, Message, QuickCommand};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -146,7 +146,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
         .header("anthropic-version", "2023-06-01")
         .header("content-type", "application/json")
         .json(&serde_json::json!({
-            "model": "claude-sonnet-4-20250514",
+            "model": get_model().unwrap_or_else(|| "claude-sonnet-4-20250514".to_string()),
             "max_tokens": 4096,
             "messages": claude_messages
         }))
@@ -243,15 +243,19 @@ pub fn add_command(name: String, prompt: String) -> Result<QuickCommand, String>
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Settings {
     pub api_key_set: bool,
+    pub model: String,
 }
 
 #[command]
 pub fn get_settings() -> Result<Settings, String> {
     let api_key_set = get_api_key().is_some();
-    Ok(Settings { api_key_set })
+    let model = get_model().unwrap_or_else(|| "claude-sonnet-4-20250514".to_string());
+    Ok(Settings { api_key_set, model })
 }
 
 #[command]
-pub fn save_settings(api_key: String) -> Result<(), String> {
-    set_api_key(&api_key)
+pub fn save_settings(api_key: String, model: String) -> Result<(), String> {
+    set_api_key(&api_key)?;
+    set_model(&model)?;
+    Ok(())
 }
