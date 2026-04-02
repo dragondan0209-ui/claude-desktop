@@ -122,8 +122,6 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
         .filter_map(|r| r.ok())
         .collect();
 
-    drop(db);
-
     // Build messages for Claude API
     let claude_messages: Vec<serde_json::Value> = history
         .into_iter()
@@ -157,7 +155,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     // Validate HTTP status
     if !response.status().is_success() {
         let status = response.status();
-        let body = response.text().await.unwrap_or_default();
+        let _body = response.text().await.unwrap_or_default();
         return Err(format!("API error: {}", status));
     }
 
@@ -173,7 +171,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     // Check for error blocks in the response
     for block in blocks {
         if block["type"].as_str() == Some("error") {
-            let error_msg = block["text"].as_str().unwrap_or("Unknown error");
+            let _error_msg = block["text"].as_str().unwrap_or("Unknown error");
             return Err("Claude API returned an error".to_string());
         }
     }
