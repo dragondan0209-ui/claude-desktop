@@ -7,7 +7,7 @@ mod db;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager,
+    GlobalShortcutManager, Manager,
 };
 
 fn main() {
@@ -50,6 +50,17 @@ fn main() {
                     }
                 })
                 .build(app)?;
+
+            // Register global shortcut
+            let handle = app.handle().clone();
+            app.global_shortcut_manager()
+                .on_shortcut("CmdOrCtrl+Shift+C", move |_app, _shortcut, _event| {
+                    if let Some(window) = handle.get_webview_window("main") {
+                        let _ = window.show();
+                        let _ = window.set_focus();
+                    }
+                })
+                .ok();
 
             Ok(())
         })
