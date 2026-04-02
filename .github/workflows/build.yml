@@ -26,10 +26,7 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Check tauri cli
-        run: ls node_modules/@tauri-apps/cli/tauri.js
+        run: npm ci --include=dev
 
       - name: Build Tauri app
         run: ./node_modules/@tauri-apps/cli/tauri.js build
