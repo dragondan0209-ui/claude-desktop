@@ -158,7 +158,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     if !response.status().is_success() {
         let status = response.status();
         let body = response.text().await.unwrap_or_default();
-        return Err(format!("API error {}: {}", status, body));
+        return Err(format!("API error: {}", status));
     }
 
     let response_json: serde_json::Value = response
@@ -174,7 +174,7 @@ pub async fn send_message(conversation_id: String, content: String) -> Result<Me
     for block in blocks {
         if block["type"].as_str() == Some("error") {
             let error_msg = block["text"].as_str().unwrap_or("Unknown error");
-            return Err(format!("Claude API error: {}", error_msg));
+            return Err("Claude API returned an error".to_string());
         }
     }
 
