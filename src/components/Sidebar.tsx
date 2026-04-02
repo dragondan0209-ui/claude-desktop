@@ -10,6 +10,7 @@ interface Props {
   onDeleteConversation: (id: string) => void;
   onSelectCommand: (prompt: string) => void;
   onAddCommand: (name: string, prompt: string) => void;
+  onOpenSettings: () => void;
 }
 
 export default function Sidebar({
@@ -21,6 +22,7 @@ export default function Sidebar({
   onDeleteConversation,
   onSelectCommand,
   onAddCommand,
+  onOpenSettings,
 }: Props) {
   const [showAddCommand, setShowAddCommand] = useState(false);
   const [newCmdName, setNewCmdName] = useState('');
@@ -121,7 +123,10 @@ export default function Sidebar({
       </div>
 
       <div className="p-4 border-t border-gray-700">
-        <button className="w-full text-gray-400 hover:text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2">
+        <button
+          onClick={onOpenSettings}
+          className="w-full text-gray-400 hover:text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2"
+        >
           <span>⚙️</span>
           <span>设置</span>
         </button>

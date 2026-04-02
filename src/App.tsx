@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
-import { Conversation, Message, QuickCommand, Settings } from './types';
+import Settings from './components/Settings';
+import { Conversation, Message, QuickCommand, Settings as SettingsType } from './types';
 
 function App() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [commands, setCommands] = useState<QuickCommand[]>([]);
-  const [settings, setSettings] = useState<Settings>({ api_key_set: false });
+  const [settings, setSettings] = useState<SettingsType>({ api_key_set: false });
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     loadConversations();
@@ -37,7 +39,7 @@ function App() {
 
   async function loadSettings() {
     try {
-      const s = await invoke<Settings>('get_settings');
+      const s = await invoke<SettingsType>('get_settings');
       setSettings(s);
     } catch (e) {
       console.error('Failed to load settings:', e);
@@ -121,12 +123,16 @@ function App() {
         onDeleteConversation={handleDeleteConversation}
         onSelectCommand={(prompt) => {/* Fill input */}}
         onAddCommand={handleAddCommand}
+        onOpenSettings={() => setShowSettings(true)}
       />
       <ChatArea
         messages={messages}
         onSendMessage={handleSendMessage}
         onClearConversation={() => setMessages([])}
       />
+      {showSettings && (
+        <Settings onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 }
